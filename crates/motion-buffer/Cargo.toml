@@ -1,0 +1,25 @@
+[package]
+name = "motion-buffer"
+description = "Buffer pool manager for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+motion-storage = { workspace = true }
+bytes = { workspace = true }
+parking_lot = { workspace = true }
+dashmap = { workspace = true }
+crossbeam = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+criterion = { workspace = true }
+
+# Benchmarks will be added in Phase 1
+# [[bench]]
+# name = "buffer_pool"
+# harness = false

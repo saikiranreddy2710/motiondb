@@ -1,9 +1,9 @@
 # ============================================================
-# NexusDB — Multi-stage Docker Build
+# MotionDB — Multi-stage Docker Build
 # ============================================================
-# Build:  docker build -t nexusdb .
+# Build:  docker build -t motiondb .
 # Run:    docker run -d -p 5431:5431 -p 5432:5432 \
-#           -v nexusdb-data:/var/lib/nexusdb/data nexusdb
+#           -v motiondb-data:/var/lib/motiondb/data motiondb
 # ============================================================
 
 # Stage 1: Build
@@ -16,8 +16,8 @@ COPY Cargo.toml Cargo.lock ./
 COPY crates/ crates/
 COPY proto/ proto/
 
-RUN cargo build --release --bin nexusd \
-    && strip target/release/nexusd
+RUN cargo build --release --bin motiond \
+    && strip target/release/motiond
 
 # Stage 2: Runtime
 FROM debian:bookworm-slim
@@ -27,24 +27,24 @@ RUN apt-get update \
         ca-certificates \
         libssl3 \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r nexusdb \
-    && useradd -r -g nexusdb -d /var/lib/nexusdb -s /sbin/nologin nexusdb \
-    && mkdir -p /var/lib/nexusdb/data /docker-entrypoint-initdb.d \
-    && chown -R nexusdb:nexusdb /var/lib/nexusdb
+    && groupadd -r motiondb \
+    && useradd -r -g motiondb -d /var/lib/motiondb -s /sbin/nologin motiondb \
+    && mkdir -p /var/lib/motiondb/data /docker-entrypoint-initdb.d \
+    && chown -R motiondb:motiondb /var/lib/motiondb
 
-COPY --from=builder /build/target/release/nexusd /usr/local/bin/nexusd
+COPY --from=builder /build/target/release/motiond /usr/local/bin/motiond
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-VOLUME ["/var/lib/nexusdb/data"]
+VOLUME ["/var/lib/motiondb/data"]
 
 # PG wire protocol + gRPC
 EXPOSE 5431 5432
 
-USER nexusdb
+USER motiondb
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD ["nexusd", "--version"] || exit 1
+    CMD ["motiond", "--version"] || exit 1
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["nexusd", "--data-dir", "/var/lib/nexusdb/data", "-H", "0.0.0.0"]
+CMD ["motiond", "--data-dir", "/var/lib/motiondb/data", "-H", "0.0.0.0"]

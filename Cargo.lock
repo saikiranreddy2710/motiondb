@@ -1642,6 +1642,334 @@ dependencies = [
 ]
 
 [[package]]
+name = "motion-bench"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "motion-buffer",
+ "motion-client",
+ "motion-common",
+ "motion-proto",
+ "motion-server",
+ "motion-sql",
+ "motion-storage",
+ "motion-wal",
+ "rand 0.8.5",
+ "tempfile",
+ "tokio",
+]
+
+[[package]]
+name = "motion-buffer"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "criterion",
+ "crossbeam",
+ "dashmap",
+ "motion-common",
+ "motion-storage",
+ "parking_lot",
+ "tempfile",
+]
+
+[[package]]
+name = "motion-cache"
+version = "0.1.0"
+dependencies = [
+ "ahash 0.8.12",
+ "atomic",
+ "bitvec",
+ "criterion",
+ "hashbrown 0.14.5",
+ "parking_lot",
+ "rand 0.8.5",
+ "siphasher",
+ "thiserror",
+]
+
+[[package]]
+name = "motion-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "atty",
+ "clap",
+ "comfy-table",
+ "dirs",
+ "motion-client",
+ "rpassword",
+ "rustyline",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "motion-client"
+version = "0.1.0"
+dependencies = [
+ "motion-common",
+ "motion-proto",
+ "parking_lot",
+ "prost",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tonic",
+]
+
+[[package]]
+name = "motion-common"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "chrono",
+ "crc32fast",
+ "humantime",
+ "libc",
+ "parking_lot",
+ "proptest",
+ "serde",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "motion-hnsw"
+version = "0.1.0"
+dependencies = [
+ "parking_lot",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+]
+
+[[package]]
+name = "motion-kv"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "crc32fast",
+ "criterion",
+ "crossbeam-epoch",
+ "crossbeam-utils",
+ "lz4_flex",
+ "motion-cache",
+ "motion-common",
+ "parking_lot",
+ "proptest",
+ "rand 0.8.5",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "motion-mvcc"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "crossbeam-epoch",
+ "dashmap",
+ "motion-common",
+ "parking_lot",
+ "proptest",
+]
+
+[[package]]
+name = "motion-proto"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "tonic",
+ "tonic-build",
+]
+
+[[package]]
+name = "motion-query"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "criterion",
+ "motion-common",
+ "motion-storage",
+ "motion-txn",
+]
+
+[[package]]
+name = "motion-raft"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "bytes",
+ "crc32fast",
+ "dashmap",
+ "motion-common",
+ "motion-wal",
+ "parking_lot",
+ "rand 0.8.5",
+ "serde",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "motion-security"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "crc32fast",
+ "hmac",
+ "parking_lot",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "motion-server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "clap",
+ "dashmap",
+ "dirs",
+ "futures",
+ "futures-core",
+ "futures-util",
+ "motion-buffer",
+ "motion-cache",
+ "motion-common",
+ "motion-hnsw",
+ "motion-mvcc",
+ "motion-proto",
+ "motion-query",
+ "motion-raft",
+ "motion-security",
+ "motion-sql",
+ "motion-storage",
+ "motion-txn",
+ "motion-wal",
+ "opensrv-mysql",
+ "parking_lot",
+ "pgwire",
+ "prost",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
+ "tonic",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "motion-sql"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "motion-common",
+ "motion-hnsw",
+ "motion-kv",
+ "motion-storage",
+ "parking_lot",
+ "proptest",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "sqlparser",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "motion-storage"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "crc32fast",
+ "crossbeam",
+ "io-uring",
+ "libc",
+ "memmap2",
+ "motion-cache",
+ "motion-common",
+ "parking_lot",
+ "proptest",
+ "tempfile",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "motion-test"
+version = "0.1.0"
+dependencies = [
+ "motion-buffer",
+ "motion-client",
+ "motion-common",
+ "motion-raft",
+ "motion-server",
+ "motion-storage",
+ "motion-txn",
+ "motion-wal",
+ "rand 0.8.5",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "motion-txn"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "dashmap",
+ "motion-common",
+ "motion-mvcc",
+ "motion-wal",
+ "parking_lot",
+ "tempfile",
+]
+
+[[package]]
+name = "motion-wal"
+version = "0.1.0"
+dependencies = [
+ "bitflags 2.10.0",
+ "bytes",
+ "crc32fast",
+ "criterion",
+ "crossbeam",
+ "memmap2",
+ "motion-common",
+ "parking_lot",
+ "tempfile",
+ "thiserror",
+]
+
+[[package]]
 name = "multimap"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1703,333 +2031,6 @@ dependencies = [
  "time",
  "uuid",
  "zstd",
-]
-
-[[package]]
-name = "nexus-bench"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "nexus-buffer",
- "nexus-client",
- "nexus-common",
- "nexus-proto",
- "nexus-server",
- "nexus-sql",
- "nexus-storage",
- "nexus-wal",
- "rand 0.8.5",
- "tempfile",
- "tokio",
-]
-
-[[package]]
-name = "nexus-buffer"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "criterion",
- "crossbeam",
- "dashmap",
- "nexus-common",
- "nexus-storage",
- "parking_lot",
- "tempfile",
-]
-
-[[package]]
-name = "nexus-cache"
-version = "0.1.0"
-dependencies = [
- "ahash 0.8.12",
- "atomic",
- "bitvec",
- "criterion",
- "hashbrown 0.14.5",
- "parking_lot",
- "rand 0.8.5",
- "siphasher",
- "thiserror",
-]
-
-[[package]]
-name = "nexus-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "atty",
- "clap",
- "comfy-table",
- "dirs",
- "nexus-client",
- "rpassword",
- "rustyline",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "nexus-client"
-version = "0.1.0"
-dependencies = [
- "nexus-common",
- "nexus-proto",
- "parking_lot",
- "prost",
- "tempfile",
- "thiserror",
- "tokio",
- "tonic",
-]
-
-[[package]]
-name = "nexus-common"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "chrono",
- "crc32fast",
- "humantime",
- "libc",
- "parking_lot",
- "proptest",
- "serde",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "nexus-hnsw"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
- "rand 0.8.5",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
-]
-
-[[package]]
-name = "nexus-kv"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "crc32fast",
- "criterion",
- "crossbeam-epoch",
- "crossbeam-utils",
- "lz4_flex",
- "nexus-cache",
- "nexus-common",
- "parking_lot",
- "proptest",
- "rand 0.8.5",
- "tempfile",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-mvcc"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "crossbeam-epoch",
- "dashmap",
- "nexus-common",
- "parking_lot",
- "proptest",
-]
-
-[[package]]
-name = "nexus-proto"
-version = "0.1.0"
-dependencies = [
- "prost",
- "tonic",
- "tonic-build",
-]
-
-[[package]]
-name = "nexus-query"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "criterion",
- "nexus-common",
- "nexus-storage",
- "nexus-txn",
-]
-
-[[package]]
-name = "nexus-raft"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "bytes",
- "crc32fast",
- "dashmap",
- "nexus-common",
- "nexus-wal",
- "parking_lot",
- "rand 0.8.5",
- "serde",
- "tempfile",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "nexus-security"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "crc32fast",
- "hmac",
- "parking_lot",
- "rand 0.8.5",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "nexus-server"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "bytes",
- "clap",
- "dashmap",
- "dirs",
- "futures",
- "futures-core",
- "futures-util",
- "nexus-buffer",
- "nexus-cache",
- "nexus-common",
- "nexus-hnsw",
- "nexus-mvcc",
- "nexus-proto",
- "nexus-query",
- "nexus-raft",
- "nexus-security",
- "nexus-sql",
- "nexus-storage",
- "nexus-txn",
- "nexus-wal",
- "opensrv-mysql",
- "parking_lot",
- "pgwire",
- "prost",
- "rand 0.8.5",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "tonic",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "nexus-sql"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "nexus-common",
- "nexus-hnsw",
- "nexus-kv",
- "nexus-storage",
- "parking_lot",
- "proptest",
- "serde",
- "serde_json",
- "sqlparser",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "nexus-storage"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "crc32fast",
- "crossbeam",
- "io-uring",
- "libc",
- "memmap2",
- "nexus-cache",
- "nexus-common",
- "parking_lot",
- "proptest",
- "tempfile",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "nexus-test"
-version = "0.1.0"
-dependencies = [
- "nexus-buffer",
- "nexus-client",
- "nexus-common",
- "nexus-raft",
- "nexus-server",
- "nexus-storage",
- "nexus-txn",
- "nexus-wal",
- "rand 0.8.5",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "nexus-txn"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "dashmap",
- "nexus-common",
- "nexus-mvcc",
- "nexus-wal",
- "parking_lot",
- "tempfile",
-]
-
-[[package]]
-name = "nexus-wal"
-version = "0.1.0"
-dependencies = [
- "bitflags 2.10.0",
- "bytes",
- "crc32fast",
- "criterion",
- "crossbeam",
- "memmap2",
- "nexus-common",
- "parking_lot",
- "tempfile",
- "thiserror",
 ]
 
 [[package]]

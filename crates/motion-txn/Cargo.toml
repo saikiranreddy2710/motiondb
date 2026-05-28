@@ -1,0 +1,19 @@
+[package]
+name = "motion-txn"
+description = "Transaction manager for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+motion-wal = { workspace = true }
+motion-mvcc = { workspace = true }
+parking_lot = { workspace = true }
+dashmap = { workspace = true }
+bytes = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

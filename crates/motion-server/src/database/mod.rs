@@ -1,0 +1,84 @@
+//! # MotionDB Database Engine
+//!
+//! This module provides the unified database interface that wires together
+//! all MotionDB components:
+//!
+//! - SQL parsing and execution (`motion-sql`)
+//! - Transaction management (`motion-txn`)
+//! - MVCC storage (`motion-mvcc`)
+//! - Storage engine (`motion-storage`)
+//!
+//! # Architecture
+//!
+//! ```text
+//! ┌────────────────────────────────────────────────────────────────┐
+//! │                         Database                                │
+//! │                            │                                    │
+//! │    ┌───────────────────────┼───────────────────────┐           │
+//! │    ▼                       ▼                       ▼           │
+//! │ ┌──────────────┐    ┌─────────────────┐    ┌──────────────┐   │
+//! │ │ SessionManager│    │ StorageEngine   │    │ TxnManager   │   │
+//! │ │              │    │                 │    │              │   │
+//! │ │ - Sessions   │    │ - Catalog       │    │ - LockManager│   │
+//! │ │ - Autocommit │    │ - TableStores   │    │ - MVCC       │   │
+//! │ └──────────────┘    └─────────────────┘    └──────────────┘   │
+//! │         │                    │                    │            │
+//! │         └────────────────────┼────────────────────┘            │
+//! │                              ▼                                  │
+//! │                        Session                                  │
+//! │                  (connection-level state)                       │
+//! │                              │                                  │
+//! │    ┌────────────────────────┼────────────────────────┐         │
+//! │    ▼                        ▼                        ▼         │
+//! │ ┌───────────────┐    ┌─────────────┐    ┌──────────────────┐  │
+//! │ │  SQL Parser   │    │ Planner &   │    │ Query Executor   │  │
+//! │ │               │    │ Optimizer   │    │                  │  │
+//! │ └───────────────┘    └─────────────┘    └──────────────────┘  │
+//! └────────────────────────────────────────────────────────────────┘
+//! ```
+//!
+//! # Example Usage
+//!
+//! ```ignore
+//! use motion_server::database::Database;
+//!
+//! // Create database
+//! let db = Database::open_memory()?;
+//!
+//! // Create a session
+//! let session = db.create_session();
+//!
+//! // Execute SQL
+//! session.execute("CREATE TABLE users (id INT PRIMARY KEY, name TEXT)")?;
+//! session.execute("INSERT INTO users VALUES (1, 'Alice')")?;
+//!
+//! let result = session.execute("SELECT * FROM users")?;
+//! for row in result.rows() {
+//!     println!("{:?}", row);
+//! }
+//!
+//! // Or use transactions explicitly
+//! session.begin()?;
+//! session.execute("UPDATE users SET name = 'Bob' WHERE id = 1")?;
+//! session.commit()?;
+//! ```
+
+mod engine;
+mod error;
+pub mod raft_sm;
+mod result;
+mod session;
+mod vector_index;
+
+pub use engine::{Database, DatabaseConfig, DatabaseStats, DEFAULT_DATABASE_NAME};
+pub use error::{DatabaseError, DatabaseResult};
+pub use raft_sm::{DatabaseStateMachine, RaftCommand};
+pub use result::{ExecuteResult, StatementResult};
+pub use session::{Session, SessionConfig, SessionId, SessionState};
+pub use vector_index::{VectorIndexKey, VectorIndexManager};
+
+// Re-export security types for convenience
+pub use motion_security::{
+    AccessDecision, AuditLog, AuthError, Authenticator, Authorizer, Credential, Identity,
+    Permission, Privilege, Role,
+};

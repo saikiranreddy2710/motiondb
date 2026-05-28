@@ -1,31 +1,31 @@
 version: "3.8"
 
 services:
-  nexusdb:
+  motiondb:
     build: .
-    image: nexusdb/nexusdb:latest
-    container_name: nexusdb
+    image: motiondb/motiondb:latest
+    container_name: motiondb
     ports:
       - "5431:5431"   # PostgreSQL wire protocol
       - "5432:5432"   # gRPC
     volumes:
-      - nexusdb-data:/var/lib/nexusdb/data
+      - motiondb-data:/var/lib/motiondb/data
       - ./initdb:/docker-entrypoint-initdb.d  # mount init SQL scripts
     environment:
-      - NEXUS_HOST=0.0.0.0
-      - NEXUS_PORT=5432
-      - NEXUS_LOG_LEVEL=info
+      - MOTION_HOST=0.0.0.0
+      - MOTION_PORT=5432
+      - MOTION_LOG_LEVEL=info
       # Uncomment to enable auth:
-      # - NEXUS_AUTH=true
-      # - NEXUS_ADMIN_PASSWORD=changeme
+      # - MOTION_AUTH=true
+      # - MOTION_ADMIN_PASSWORD=changeme
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "nexusd", "--version"]
+      test: ["CMD", "motiond", "--version"]
       interval: 30s
       timeout: 3s
       start_period: 10s
       retries: 3
 
 volumes:
-  nexusdb-data:
+  motiondb-data:
     driver: local

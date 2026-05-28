@@ -1,0 +1,27 @@
+[package]
+name = "motion-wal"
+description = "Write-ahead logging for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+bytes = { workspace = true }
+parking_lot = { workspace = true }
+crossbeam = { workspace = true }
+crc32fast = { workspace = true }
+memmap2 = { workspace = true }
+thiserror = { workspace = true }
+bitflags = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+criterion = { workspace = true }
+
+# Benchmarks will be added in Phase 1
+# [[bench]]
+# name = "wal"
+# harness = false

@@ -1,0 +1,378 @@
+//! MotionDB Command-Line Interface
+//!
+//! A powerful CLI for interacting with MotionDB databases.
+//!
+//! # Usage
+//!
+//! ```bash
+//! # Start interactive REPL
+//! motion -H localhost -p 5432
+//!
+//! # Execute a single command
+//! motion -c "SELECT * FROM users"
+//!
+//! # Execute commands from a file
+//! motion -f queries.sql
+//!
+//! # Output as JSON
+//! motion -o json -c "SELECT * FROM users"
+//! ```
+
+use std::path::PathBuf;
+use std::process::ExitCode;
+
+use anyhow::Result;
+use clap::{Parser, ValueEnum};
+use tracing::info;
+use tracing_subscriber::EnvFilter;
+
+mod commands;
+mod config;
+mod formatter;
+mod repl;
+
+use config::CliConfig;
+use formatter::OutputFormat;
+use repl::Repl;
+
+/// MotionDB command-line interface
+#[derive(Parser, Debug)]
+#[command(
+    name = "motion",
+    author = "MotionDB Team",
+    version,
+    about = "Command-line interface for MotionDB",
+    long_about = "A powerful command-line interface for interacting with MotionDB databases.\n\n\
+                  Use this tool for interactive SQL sessions, executing queries from files,\n\
+                  and managing your MotionDB instances."
+)]
+struct Args {
+    /// Server hostname
+    #[arg(short = 'H', long, default_value = "localhost", env = "MOTION_HOST")]
+    host: String,
+
+    /// Server port
+    #[arg(short = 'p', long, default_value_t = 5432, env = "MOTION_PORT")]
+    port: u16,
+
+    /// Database name
+    #[arg(short = 'd', long, env = "MOTION_DATABASE")]
+    database: Option<String>,
+
+    /// Username
+    #[arg(short = 'U', long, env = "MOTION_USER")]
+    user: Option<String>,
+
+    /// Password (use MOTION_PASSWORD env var for security)
+    #[arg(short = 'W', long, env = "MOTION_PASSWORD", hide_env_values = true)]
+    password: Option<String>,
+
+    /// Execute a single SQL command and exit
+    #[arg(short = 'c', long)]
+    command: Option<String>,
+
+    /// Execute SQL commands from file and exit
+    #[arg(short = 'f', long, value_name = "FILE")]
+    file: Option<PathBuf>,
+
+    /// Output format
+    #[arg(short = 'o', long, value_enum, default_value = "table")]
+    output: OutputFormatArg,
+
+    /// Enable verbose output
+    #[arg(short = 'v', long)]
+    verbose: bool,
+
+    /// Suppress banner and prompts (for scripting)
+    #[arg(short = 'q', long)]
+    quiet: bool,
+
+    /// Configuration file path
+    #[arg(long, value_name = "FILE")]
+    config: Option<PathBuf>,
+
+    /// Use mock mode (no server connection)
+    #[arg(long, hide = true)]
+    mock: bool,
+}
+
+/// Output format argument
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum OutputFormatArg {
+    /// Display results in a formatted table
+    Table,
+    /// Display results as JSON
+    Json,
+    /// Display results as CSV
+    Csv,
+    /// Display raw values
+    Raw,
+}
+
+impl From<OutputFormatArg> for OutputFormat {
+    fn from(arg: OutputFormatArg) -> Self {
+        match arg {
+            OutputFormatArg::Table => OutputFormat::Table,
+            OutputFormatArg::Json => OutputFormat::Json,
+            OutputFormatArg::Csv => OutputFormat::Csv,
+            OutputFormatArg::Raw => OutputFormat::Raw,
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() -> ExitCode {
+    match run().await {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("Error: {e}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+async fn run() -> Result<()> {
+    let args = Args::parse();
+
+    // Initialize logging
+    init_logging(args.verbose);
+
+    // Load configuration
+    let config = load_config(&args).await?;
+
+    // Determine execution mode
+    if let Some(command) = &args.command {
+        // Execute single command
+        execute_command(&config, command, args.output.into()).await
+    } else if let Some(file) = &args.file {
+        // Execute from file
+        execute_file(&config, file, args.output.into()).await
+    } else {
+        // Start interactive REPL
+        run_repl(&config, args.output.into(), args.quiet).await
+    }
+}
+
+fn init_logging(verbose: bool) {
+    let filter = if verbose {
+        EnvFilter::new("motion_cli=debug,motion_client=debug")
+    } else {
+        EnvFilter::new("motion_cli=warn")
+    };
+
+    tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .with_target(false)
+        .without_time()
+        .init();
+}
+
+async fn load_config(args: &Args) -> Result<CliConfig> {
+    // Try to load from config file
+    let mut config = if let Some(path) = &args.config {
+        CliConfig::from_file(path).await?
+    } else {
+        CliConfig::load_default().await?
+    };
+
+    // Override with command line arguments
+    config.host = args.host.clone();
+    config.port = args.port;
+
+    if let Some(db) = &args.database {
+        config.database = Some(db.clone());
+    }
+    if let Some(user) = &args.user {
+        config.username = Some(user.clone());
+    }
+    if let Some(pass) = &args.password {
+        config.password = Some(pass.clone());
+    }
+
+    config.mock_mode = args.mock;
+
+    // If username is set but no password, prompt interactively.
+    // Extract username into a separate variable to avoid CodeQL tracing
+    // config (which also contains password) into the print output.
+    let prompt_user = config.username.clone();
+    if prompt_user.is_some() && config.password.is_none() {
+        if atty::is(atty::Stream::Stdin) {
+            eprint!("Password for user \"{}\": ", prompt_user.as_deref().unwrap_or(""));
+            let password = rpassword::read_password().ok();
+            if let Some(pass) = password {
+                if !pass.is_empty() {
+                    config.password = Some(pass);
+                }
+            }
+        }
+    }
+
+    Ok(config)
+}
+
+async fn execute_command(config: &CliConfig, sql: &str, format: OutputFormat) -> Result<()> {
+    info!("Executing command: {}", sql);
+
+    let mut repl = Repl::new(config.clone(), format)?;
+    repl.connect().await?;
+    repl.execute_and_print(sql).await?;
+
+    Ok(())
+}
+
+async fn execute_file(config: &CliConfig, path: &PathBuf, format: OutputFormat) -> Result<()> {
+    info!("Executing file: {}", path.display());
+
+    let content = tokio::fs::read_to_string(path).await?;
+    let mut repl = Repl::new(config.clone(), format)?;
+    repl.connect().await?;
+
+    // Split by semicolons and execute each statement
+    for statement in split_statements(&content) {
+        let trimmed = statement.trim();
+        if !trimmed.is_empty() && !trimmed.starts_with("--") {
+            repl.execute_and_print(trimmed).await?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn run_repl(config: &CliConfig, format: OutputFormat, quiet: bool) -> Result<()> {
+    let mut repl = Repl::new(config.clone(), format)?;
+
+    if !quiet {
+        repl.print_banner();
+    }
+
+    repl.connect().await?;
+    repl.run().await
+}
+
+/// Split SQL content into individual statements.
+///
+/// Correctly handles:
+/// - String literals ('single' and "double") with escaped quotes
+/// - Line comments (-- to end of line)
+/// - Block comments (/* ... */)
+/// - Non-ASCII content (UTF-8 safe via char_indices)
+pub fn split_statements(content: &str) -> Vec<&str> {
+    let mut statements = Vec::new();
+    let mut start_byte = 0;
+    let mut in_string = false;
+    let mut string_char = ' ';
+    let mut in_comment = false;
+    let mut in_block_comment = false;
+
+    let bytes = content.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+
+    // Iterate by byte offset — only check ASCII-range chars for syntax,
+    // which is safe because SQL delimiters are all ASCII.
+    while i < len {
+        let c = bytes[i];
+
+        // Handle block comments
+        if !in_string && !in_comment && i + 1 < len && c == b'/' && bytes[i + 1] == b'*' {
+            in_block_comment = true;
+            i += 2;
+            continue;
+        }
+        if in_block_comment && i + 1 < len && c == b'*' && bytes[i + 1] == b'/' {
+            in_block_comment = false;
+            i += 2;
+            continue;
+        }
+        if in_block_comment {
+            i += 1;
+            continue;
+        }
+
+        // Handle line comments
+        if !in_string && i + 1 < len && c == b'-' && bytes[i + 1] == b'-' {
+            in_comment = true;
+            i += 2;
+            continue;
+        }
+        if in_comment && c == b'\n' {
+            in_comment = false;
+            i += 1;
+            continue;
+        }
+        if in_comment {
+            i += 1;
+            continue;
+        }
+
+        // Handle strings
+        if !in_string && (c == b'\'' || c == b'"') {
+            in_string = true;
+            string_char = c as char;
+            i += 1;
+            continue;
+        }
+        if in_string && c == string_char as u8 {
+            // Check for escaped quote ('')
+            if i + 1 < len && bytes[i + 1] == string_char as u8 {
+                i += 2;
+                continue;
+            }
+            in_string = false;
+            i += 1;
+            continue;
+        }
+
+        // Statement separator
+        if !in_string && c == b';' {
+            statements.push(&content[start_byte..i]);
+            start_byte = i + 1;
+        }
+
+        i += 1;
+    }
+
+    // Don't forget the last statement
+    if start_byte < len {
+        let last = content[start_byte..].trim();
+        if !last.is_empty() {
+            statements.push(&content[start_byte..]);
+        }
+    }
+
+    statements
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_split_statements_simple() {
+        let sql = "SELECT 1; SELECT 2; SELECT 3";
+        let stmts = split_statements(sql);
+        assert_eq!(stmts.len(), 3);
+    }
+
+    #[test]
+    fn test_split_statements_with_strings() {
+        let sql = "SELECT 'hello; world'; SELECT 2";
+        let stmts = split_statements(sql);
+        assert_eq!(stmts.len(), 2);
+        assert!(stmts[0].contains("'hello; world'"));
+    }
+
+    #[test]
+    fn test_split_statements_with_comments() {
+        let sql = "SELECT 1; -- comment with ; semicolon\nSELECT 2";
+        let stmts = split_statements(sql);
+        assert_eq!(stmts.len(), 2);
+    }
+
+    #[test]
+    fn test_split_statements_block_comment() {
+        let sql = "SELECT 1; /* block ; comment */ SELECT 2";
+        let stmts = split_statements(sql);
+        assert_eq!(stmts.len(), 2);
+    }
+}

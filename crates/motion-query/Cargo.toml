@@ -1,0 +1,22 @@
+[package]
+name = "motion-query"
+description = "Query execution engine for MotionDB (Photon)"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+motion-storage = { workspace = true }
+motion-txn = { workspace = true }
+bytes = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+
+# Benchmarks will be added in Phase 5
+# [[bench]]
+# name = "query"
+# harness = false

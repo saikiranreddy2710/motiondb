@@ -1,0 +1,38 @@
+[package]
+name = "motion-bench"
+description = "Performance benchmarks for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+motion-storage = { workspace = true }
+motion-buffer = { workspace = true }
+motion-wal = { workspace = true }
+motion-sql = { workspace = true }
+motion-server = { workspace = true }
+motion-client = { workspace = true }
+motion-proto = { workspace = true }
+
+criterion = { workspace = true }
+tokio = { workspace = true }
+rand = { workspace = true }
+tempfile = { workspace = true }
+
+[lib]
+path = "src/lib.rs"
+
+[[bench]]
+name = "storage"
+harness = false
+
+[[bench]]
+name = "sql"
+harness = false
+
+[[bench]]
+name = "database"
+harness = false

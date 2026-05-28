@@ -1,53 +1,53 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/nexus-common",
-    "crates/nexus-storage",
-    "crates/nexus-buffer",
-    "crates/nexus-wal",
-    "crates/nexus-txn",
-    "crates/nexus-mvcc",
-    "crates/nexus-raft",
-    "crates/nexus-query",
-    "crates/nexus-sql",
-    "crates/nexus-proto",
-    "crates/nexus-server",
-    "crates/nexus-client",
-    "crates/nexus-cli",
-    "crates/nexus-test",
-    "crates/nexus-bench",
-    "crates/nexus-cache",
-    "crates/nexus-kv",
-    "crates/nexus-security",
-    "crates/nexus-hnsw",
+    "crates/motion-common",
+    "crates/motion-storage",
+    "crates/motion-buffer",
+    "crates/motion-wal",
+    "crates/motion-txn",
+    "crates/motion-mvcc",
+    "crates/motion-raft",
+    "crates/motion-query",
+    "crates/motion-sql",
+    "crates/motion-proto",
+    "crates/motion-server",
+    "crates/motion-client",
+    "crates/motion-cli",
+    "crates/motion-test",
+    "crates/motion-bench",
+    "crates/motion-cache",
+    "crates/motion-kv",
+    "crates/motion-security",
+    "crates/motion-hnsw",
 ]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["NexusDB Team <saikiranreddy2710@github.com>"]
+authors = ["MotionDB Team <saikiranreddy2710@github.com>"]
 license = "MIT"
-repository = "https://github.com/saikiranreddy2710/nexusdb"
+repository = "https://github.com/saikiranreddy2710/motiondb"
 keywords = ["database", "newsql", "distributed", "storage-engine"]
 categories = ["database", "data-structures"]
 
 [workspace.dependencies]
 # Internal crates
-nexus-common = { path = "crates/nexus-common" }
-nexus-storage = { path = "crates/nexus-storage" }
-nexus-buffer = { path = "crates/nexus-buffer" }
-nexus-wal = { path = "crates/nexus-wal" }
-nexus-txn = { path = "crates/nexus-txn" }
-nexus-mvcc = { path = "crates/nexus-mvcc" }
-nexus-raft = { path = "crates/nexus-raft" }
-nexus-query = { path = "crates/nexus-query" }
-nexus-sql = { path = "crates/nexus-sql" }
-nexus-server = { path = "crates/nexus-server" }
-nexus-client = { path = "crates/nexus-client" }
-nexus-proto = { path = "crates/nexus-proto" }
-nexus-cache = { path = "crates/nexus-cache" }
-nexus-kv = { path = "crates/nexus-kv" }
-nexus-hnsw = { path = "crates/nexus-hnsw" }
+motion-common = { path = "crates/motion-common" }
+motion-storage = { path = "crates/motion-storage" }
+motion-buffer = { path = "crates/motion-buffer" }
+motion-wal = { path = "crates/motion-wal" }
+motion-txn = { path = "crates/motion-txn" }
+motion-mvcc = { path = "crates/motion-mvcc" }
+motion-raft = { path = "crates/motion-raft" }
+motion-query = { path = "crates/motion-query" }
+motion-sql = { path = "crates/motion-sql" }
+motion-server = { path = "crates/motion-server" }
+motion-client = { path = "crates/motion-client" }
+motion-proto = { path = "crates/motion-proto" }
+motion-cache = { path = "crates/motion-cache" }
+motion-kv = { path = "crates/motion-kv" }
+motion-hnsw = { path = "crates/motion-hnsw" }
 
 # Async runtime
 tokio = { version = "1.35", features = ["full"] }

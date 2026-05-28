@@ -1,0 +1,52 @@
+[package]
+name = "motion-server"
+description = "Network server for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "motiond"
+path = "src/bin/motiond.rs"
+
+[dependencies]
+motion-common = { workspace = true }
+motion-storage = { workspace = true }
+motion-buffer = { workspace = true }
+motion-wal = { workspace = true }
+motion-txn = { workspace = true }
+motion-mvcc = { workspace = true }
+motion-raft = { workspace = true }
+motion-query = { workspace = true }
+motion-sql = { workspace = true }
+motion-proto = { workspace = true }
+motion-cache = { path = "../motion-cache" }
+motion-security = { path = "../motion-security" }
+motion-hnsw = { workspace = true }
+tokio = { workspace = true }
+tonic = { workspace = true }
+prost = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+parking_lot = { workspace = true }
+dashmap = { workspace = true }
+futures-core = { workspace = true }
+futures-util = { workspace = true }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+dirs = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+rand = { workspace = true }
+bytes = { workspace = true }
+pgwire = { workspace = true }
+opensrv-mysql = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

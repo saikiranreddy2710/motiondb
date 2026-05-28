@@ -19,7 +19,7 @@ reviews:
       - main
       - develop
   path_instructions:
-    - path: "crates/nexus-storage/**"
+    - path: "crates/motion-storage/**"
       instructions: |
         This is the SageTree storage engine - a novel fractional cascading B-tree.
         Focus on:
@@ -27,7 +27,7 @@ reviews:
         - Page layout and buffer pool management
         - Write amplification optimization
         - Concurrent access patterns
-    - path: "crates/nexus-raft/**"
+    - path: "crates/motion-raft/**"
       instructions: |
         This is the Raft++ consensus implementation with parallel commit.
         Focus on:
@@ -35,7 +35,7 @@ reviews:
         - Leader election and log replication logic
         - Network partition handling
         - Linearizability guarantees
-    - path: "crates/nexus-sql/**"
+    - path: "crates/motion-sql/**"
       instructions: |
         This is the Photon query engine using Apache Arrow concepts.
         Focus on:
@@ -44,7 +44,7 @@ reviews:
         - Physical plan execution
         - Vectorized execution patterns
         - JOIN and aggregate implementations
-    - path: "crates/nexus-wal/**"
+    - path: "crates/motion-wal/**"
       instructions: |
         This is the Write-Ahead Log implementation.
         Focus on:
@@ -52,7 +52,7 @@ reviews:
         - Group commit optimization
         - Recovery correctness
         - fsync semantics
-    - path: "crates/nexus-txn/**"
+    - path: "crates/motion-txn/**"
       instructions: |
         This is the MVCC transaction manager.
         Focus on:
@@ -60,7 +60,7 @@ reviews:
         - Deadlock detection
         - Transaction lifecycle management
         - Visibility rules
-    - path: "crates/nexus-server/**"
+    - path: "crates/motion-server/**"
       instructions: |
         This is the database server with PostgreSQL wire protocol.
         Focus on:
@@ -68,7 +68,7 @@ reviews:
         - Connection handling
         - Session management
         - Error handling
-    - path: "crates/nexus-test/**"
+    - path: "crates/motion-test/**"
       instructions: |
         This contains integration and end-to-end tests.
         Focus on:

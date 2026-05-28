@@ -1,0 +1,23 @@
+[package]
+name = "motion-test"
+description = "Integration tests for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+motion-storage = { workspace = true }
+motion-buffer = { workspace = true }
+motion-wal = { workspace = true }
+motion-txn = { workspace = true }
+motion-raft = { workspace = true }
+motion-server = { workspace = true }
+motion-client = { workspace = true }
+tokio = { workspace = true }
+tempfile = { workspace = true }
+rand = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

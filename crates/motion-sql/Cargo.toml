@@ -1,0 +1,25 @@
+[package]
+name = "motion-sql"
+description = "SQL parser and planner for MotionDB"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+motion-common = { workspace = true }
+motion-storage = { workspace = true }
+motion-kv = { workspace = true }
+motion-hnsw = { workspace = true }
+thiserror = { workspace = true }
+sqlparser = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+parking_lot = { workspace = true }
+bytes = { workspace = true }
+tracing = { workspace = true }
+rand = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

@@ -13,5 +13,5 @@ CREATE TABLE products (id INT PRIMARY KEY, name TEXT, price INT);
 INSERT INTO products VALUES (1, 'widget', 10), (2, 'gadget', 20);
 SHOW TABLES;
 SELECT * FROM products;
-USE nexusdb;
+USE motiondb;
 SHOW TABLES;

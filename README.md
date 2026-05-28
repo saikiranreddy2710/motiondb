@@ -1,10 +1,10 @@
-# NexusDB
+# MotionDB
 
 A research-grade next-generation database written in Rust, combining high performance, ACID reliability, military-grade security, and AI-native capabilities.
 
 ## What is this?
 
-NexusDB is a modern distributed database built from scratch. It combines the ACID guarantees of traditional SQL databases with horizontal scalability, a Zero Trust security model, and foundations for AI-native workloads (vector search, learned indexes).
+MotionDB is a modern distributed database built from scratch. It combines the ACID guarantees of traditional SQL databases with horizontal scalability, a Zero Trust security model, and foundations for AI-native workloads (vector search, learned indexes).
 
 The goal: understand how databases really work under the hood -- not just the theory, but the actual implementation details that make them fast, reliable, and secure.
 
@@ -59,27 +59,27 @@ The goal: understand how databases really work under the hood -- not just the th
 
 ```bash
 # Clone and build
-git clone https://github.com/saikiranreddy2710/nexusdb.git
-cd nexusdb
+git clone https://github.com/saikiranreddy2710/motiondb.git
+cd motiondb
 cargo build --release
 
 # Start the server
-./target/release/nexusd
+./target/release/motiond
 
 # In another terminal, connect with the CLI
-./target/release/nexus
+./target/release/motion
 ```
 
 Once connected:
 
 ```sql
-NexusDB> CREATE TABLE users (id INT PRIMARY KEY, name TEXT, email TEXT);
+MotionDB> CREATE TABLE users (id INT PRIMARY KEY, name TEXT, email TEXT);
 OK
 
-NexusDB> INSERT INTO users VALUES (1, 'Alice', 'alice@example.com');
+MotionDB> INSERT INTO users VALUES (1, 'Alice', 'alice@example.com');
 Inserted 1 row
 
-NexusDB> SELECT * FROM users;
+MotionDB> SELECT * FROM users;
 +----+-------+-------------------+
 | id | name  | email             |
 +----+-------+-------------------+
@@ -92,33 +92,33 @@ NexusDB> SELECT * FROM users;
 
 ```
 crates/
-├── nexus-common     # Shared types, config, errors, memory utilities
-├── nexus-cache      # Bloom filters, LRU/ARC caches, query result cache
-├── nexus-storage    # SageTree index, buffer pool, page layout, io_uring
-├── nexus-buffer     # Standalone buffer pool components
-├── nexus-wal        # Write-ahead log with group commit
-├── nexus-kv         # LSM-tree key-value engine with WAL + compaction
-├── nexus-raft       # Distributed consensus (Raft++)
-├── nexus-sql        # Parser, planner, optimizer, executor
-├── nexus-query      # Logical/physical query planning and operators
-├── nexus-txn        # Transaction manager (2PL, deadlock detection)
-├── nexus-mvcc       # Multi-version concurrency control
-├── nexus-security   # Authentication, RBAC authorization, audit log
-├── nexus-hnsw       # HNSW vector index for similarity search
-├── nexus-server     # Database server, session management, gRPC API
-├── nexus-client     # Rust client library
-├── nexus-proto      # gRPC protocol definitions (protobuf)
-├── nexus-cli        # Command-line interface
-├── nexus-test       # Integration and end-to-end tests
-└── nexus-bench      # Microbenchmarks and performance experiments
+├── motion-common     # Shared types, config, errors, memory utilities
+├── motion-cache      # Bloom filters, LRU/ARC caches, query result cache
+├── motion-storage    # SageTree index, buffer pool, page layout, io_uring
+├── motion-buffer     # Standalone buffer pool components
+├── motion-wal        # Write-ahead log with group commit
+├── motion-kv         # LSM-tree key-value engine with WAL + compaction
+├── motion-raft       # Distributed consensus (Raft++)
+├── motion-sql        # Parser, planner, optimizer, executor
+├── motion-query      # Logical/physical query planning and operators
+├── motion-txn        # Transaction manager (2PL, deadlock detection)
+├── motion-mvcc       # Multi-version concurrency control
+├── motion-security   # Authentication, RBAC authorization, audit log
+├── motion-hnsw       # HNSW vector index for similarity search
+├── motion-server     # Database server, session management, gRPC API
+├── motion-client     # Rust client library
+├── motion-proto      # gRPC protocol definitions (protobuf)
+├── motion-cli        # Command-line interface
+├── motion-test       # Integration and end-to-end tests
+└── motion-bench      # Microbenchmarks and performance experiments
 ```
 
 ## Architecture
 
 ```
 ┌─────────────┐     gRPC/TLS     ┌──────────────────────────────────────┐
-│   Client    │ ────────────────▶│           Server (nexusd)            │
-│  (nexus)    │                  │                                      │
+│   Client    │ ────────────────▶│           Server (motiond)            │
+│  (motion)    │                  │                                      │
 └─────────────┘                  │  ┌──────────────────────────────┐    │
                                  │  │     Security Layer            │    │
                                  │  │  Authentication (PBKDF2/JWT) │    │
@@ -170,17 +170,17 @@ cargo test --all
 cargo test --all -- --nocapture
 
 # Run specific crate
-cargo test -p nexus-security
+cargo test -p motion-security
 
 # Run specific test
-cargo test -p nexus-sql test_select_where
+cargo test -p motion-sql test_select_where
 ```
 
 Currently at **1216+ passing tests** across 19 crates.
 
 ## Configuration
 
-The server can be configured via `nexusdb.toml`:
+The server can be configured via `motiondb.toml`:
 
 ```toml
 host = "127.0.0.1"
@@ -198,13 +198,13 @@ tls_ca_cert = "/path/to/ca.crt"  # enables mTLS
 Or via command line:
 
 ```bash
-nexusd --port 5432 --data-dir ./data
+motiond --port 5432 --data-dir ./data
 ```
 
 ## Using the Client Library
 
 ```rust
-use nexus_client::{Client, ClientConfig};
+use motion_client::{Client, ClientConfig};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -224,7 +224,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Security Model
 
-NexusDB implements a Zero Trust security model:
+MotionDB implements a Zero Trust security model:
 
 1. **Never trust, always verify** -- every gRPC request is authenticated
 2. **Least privilege** -- RBAC ensures users only access what they need
@@ -255,9 +255,9 @@ Every query, authentication event, schema change, and data modification is recor
 
 ## Performance
 
-`nexus-bench` contains Criterion-based microbenchmarks for the storage engine (`SageTree`), SQL/database layer, and caches (LRU/ARC/Bloom).
+`motion-bench` contains Criterion-based microbenchmarks for the storage engine (`SageTree`), SQL/database layer, and caches (LRU/ARC/Bloom).
 
-On a recent M-series MacBook (bench profile, in-memory, `cargo bench -p nexus-bench -- --quick`), representative numbers are:
+On a recent M-series MacBook (bench profile, in-memory, `cargo bench -p motion-bench -- --quick`), representative numbers are:
 
 - SageTree point lookups: **3.5-5.5M keys/sec** (depending on tree size)
 - SageTree sequential inserts: **~0.6M keys/sec**
