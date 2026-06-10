@@ -1,6 +1,6 @@
 # MotionDB
 
-A research-grade next-generation database written in Rust, combining high performance, ACID reliability, military-grade security, and AI-native capabilities.
+A database written in Rust, combining high performance, ACID reliability, enhanced security, and AI-native capabilities.
 
 ## What is this?
 
